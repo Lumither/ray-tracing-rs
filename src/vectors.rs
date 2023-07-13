@@ -12,10 +12,10 @@ const ERROR: &str = "\x1b[31m\x1b[1mERROR\x1b[0m";
 
 // #[derive(Debug, Clone)]
 #[derive(Debug, Clone, Copy)]
-pub struct Vec3d(f64, f64, f64);
+pub struct Vec3d(pub f64, pub f64, pub f64);
 
 #[derive(Debug, Clone, Copy)]
-pub struct Vec2d(f64, f64);
+pub struct Vec2d(pub f64, pub f64);
 
 impl Vec3d {
     #[inline]
@@ -61,8 +61,6 @@ impl Vec3d {
     pub fn cycle_axis(axis: usize, direction: isize) -> usize {
         ((axis as isize + direction) as usize % 3_usize) as usize
     }
-
-
 
     //------------------------------------------------------------
     // setters
