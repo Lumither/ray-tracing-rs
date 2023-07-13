@@ -12,3 +12,5 @@ Cargo.lock
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
+
+# The workspace file is not ignored because it is useful in many ways
