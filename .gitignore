@@ -3,5 +3,5 @@
 # already existing elements were commented out
 
 /target
-/test.*
+*.dbg
 /ray-tracer.code-workspace
