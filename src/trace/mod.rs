@@ -9,7 +9,7 @@ use crate::vectors::Vec3d;
 use self::basic::{Fill, Light};
 
 pub mod basic;
-pub mod nnf_reader;
+pub mod nnf;
 mod surface;
 
 pub type SurfPtr = Rc<RefCell<dyn Surface>>;
