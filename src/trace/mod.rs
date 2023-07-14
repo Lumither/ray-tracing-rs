@@ -16,6 +16,7 @@ pub type SurfPtr = Rc<RefCell<dyn Surface>>;
 
 type Color = Vec3d;
 
+#[derive(Debug)]
 pub struct Config {
     fname: Vec<String>,
     aperture: f64,
@@ -40,12 +41,12 @@ impl Config {
     pub fn load() -> Config {
         let mut config = Config {
             fname: Vec::with_capacity(2),
-            color: true,
+            color: false,
             aperture: 0.0,
             max_depth: 5,
             samples: 1,
         };
-        let mut args = std::env::args();
+        let mut args = std::env::args().skip(1);
         while let Some(arg) = args.next() {
             match &arg[..] {
                 "-a" => {
@@ -62,7 +63,7 @@ impl Config {
                         .parse()
                         .expect("sampling value should be a integer!")
                 }
-                "-c" => config.color = false,
+                "-c" => config.color = true,
                 "-d" => {
                     config.max_depth = args
                         .next()
@@ -74,7 +75,10 @@ impl Config {
                 _ => (),
             }
         }
-        assert!(config.fname.len() == 2);
+        if config.fname.len() != 2 {
+            println!("usage: trace input.nff output.ppm [opts]");
+            std::process::exit(0);
+        }
         config
         // todo!("method not implemented!")
     }
