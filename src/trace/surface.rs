@@ -16,7 +16,7 @@ pub struct Triangle {}
 impl Surface for Triangle {
     fn intersect(&mut self, ray: &Ray, t0: f64, t1: f64, hits: &mut HitRecord) -> bool {
         let is_hit: bool = false;
-        todo!("The method has not been implemented!")
+        todo!("The method has not yet been implemented!")
     }
 }
 
