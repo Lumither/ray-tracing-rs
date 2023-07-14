@@ -1,16 +1,16 @@
 // this is the Surface, which stores all the surfaces, including trig, trig_patch, and sphere
 
-pub mod basic;
-pub mod nnf_reader;
-mod surface;
-
 use std::{cell::RefCell, rc::Rc};
-
-use crate::vectors::Vec3d;
 
 pub use surface::{Surface, Triangle};
 
+use crate::vectors::Vec3d;
+
 use self::basic::{Fill, Light};
+
+pub mod basic;
+pub mod nnf_reader;
+mod surface;
 
 pub type SurfPtr = Rc<RefCell<dyn Surface>>;
 
@@ -47,6 +47,11 @@ impl Config {
             samples: 1,
         };
         let mut args = std::env::args().skip(1);
+
+        if args.len() == 0 {
+            return config;
+        }
+
         while let Some(arg) = args.next() {
             match &arg[..] {
                 "-a" => {
