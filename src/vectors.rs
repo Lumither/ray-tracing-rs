@@ -38,13 +38,24 @@ impl Vec3d {
     //------------------------------------------------------------
     // accessors with calculation
     #[inline]
-    pub fn det(self, Vec3d(d, e, f): Vec3d, Vec3d(g, h, i): Vec3d) -> f64 {
-        self.0 * (e * i - h * f) + self.1 * (g * f - d * i) + self.2 * (d * h - g * e)
+    pub fn det(&self, v1: &Vec3d, v2: &Vec3d) -> f64 {
+        return self.0 * (v1.1 * v2.2 - v2.1 * v1.2)
+            + self.1 * (v2.0 * v1.2 - v1.0 * v2.2)
+            + self.2 * (v1.0 * v2.1 - v2.0 * v1.1);
     }
 
     #[inline]
     pub fn dot(&self, v: &Vec3d) -> f64 {
         self.0 * v.0 + self.1 * v.1 + self.2 * v.2
+    }
+
+    #[inline]
+    pub fn cross(&self, v: &Vec3d) -> Vec3d {
+        Vec3d(
+            self.1 * v.2 - v.2 * self.1,
+            v.0 * self.2 - self.0 * v.2,
+            self.0 * v.1 - self.1 * v.0,
+        )
     }
 
     #[inline]
@@ -117,6 +128,12 @@ where
             IdxVec3d::Snd => &self.1,
             IdxVec3d::Trd => &self.2,
         }
+    }
+}
+
+impl From<f64> for Vec3d {
+    fn from(value: f64) -> Self {
+        Vec3d(value, value, value)
     }
 }
 
