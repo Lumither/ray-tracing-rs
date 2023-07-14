@@ -1,5 +1,5 @@
-use crate::trace::{Surface, Triangle};
+use crate::trace::Surface;
 
 fn read_nnf(fname: &str) -> Box<dyn Surface> {
-    Box::new(Triangle {})
+    todo!("method not implemented")
 }

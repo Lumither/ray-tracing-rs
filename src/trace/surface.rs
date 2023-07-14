@@ -2,16 +2,35 @@
 
 use crate::vectors::Vec3d;
 
-use super::{
-    basic::{HitRecord, Ray},
-    Color,
-};
+use super::basic::{HitRecord, Ray};
+
+pub struct Sphere {
+    pub center: Vec3d,
+    pub radius: f64,
+}
+
+pub struct Triangle {
+    pub a: Vec3d,
+    pub b: Vec3d,
+    pub c: Vec3d,
+}
+
+pub struct TrianglePatch {
+    pub _super: Triangle,
+    pub n1: Vec3d,
+    pub n2: Vec3d,
+    pub n3: Vec3d,
+}
 
 pub trait Surface {
     fn intersect(&mut self, ray: &Ray, t0: f64, t1: f64, hits: &mut HitRecord) -> bool;
 }
 
-pub struct Triangle {}
+impl Surface for Sphere {
+    fn intersect(&mut self, ray: &Ray, t0: f64, t1: f64, hits: &mut HitRecord) -> bool {
+        todo!("The method has not been implemented!")
+    }
+}
 
 impl Surface for Triangle {
     fn intersect(&mut self, ray: &Ray, t0: f64, t1: f64, hits: &mut HitRecord) -> bool {
@@ -20,9 +39,9 @@ impl Surface for Triangle {
     }
 }
 
-pub struct Sphere {}
-impl Surface for Sphere {
+impl Surface for TrianglePatch {
     fn intersect(&mut self, ray: &Ray, t0: f64, t1: f64, hits: &mut HitRecord) -> bool {
-        todo!("The method has not been implemented!")
+        let is_hit: bool = false;
+        todo!("The method has not yet been implemented!")
     }
 }
