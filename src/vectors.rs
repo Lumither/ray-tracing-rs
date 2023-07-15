@@ -48,15 +48,25 @@ impl Vec3d {
     pub fn min_val(&self) -> f64 {
         self.0.min(self.1).min(self.2)
     }
-    
+
     pub fn dominant_axis(&self) -> usize {
         let (x, y, z) = (self.0.abs(), self.1.abs(), self.2.abs());
-        [x, y, z].iter().enumerate().max_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0
+        [x, y, z]
+            .iter()
+            .enumerate()
+            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+            .unwrap()
+            .0
     }
 
     pub fn subinant_axis(&self) -> usize {
         let (x, y, z) = (self.0.abs(), self.1.abs(), self.2.abs());
-        [x, y, z].iter().enumerate().min_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0
+        [x, y, z]
+            .iter()
+            .enumerate()
+            .min_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+            .unwrap()
+            .0
     }
 
     pub fn midinant_axis(&self) -> usize {
