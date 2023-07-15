@@ -8,7 +8,7 @@ use std::ops::{self, Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, S
 
 use crate::idx::{IdxVec2d, IdxVec3d, Indexer};
 
-const ERROR: &str = "\x1b[31m\x1b[1mERROR\x1b[0m";
+use super::ERROR;
 
 // #[derive(Debug, Clone)]
 #[derive(Debug, Clone, Copy)]
@@ -25,25 +25,48 @@ impl Vec3d {
 
     //------------------------------------------------------------
     // getters
-    fn x(&self) -> f64 {
+    #[inline]
+    pub fn x(&self) -> f64 {
         self.0
     }
-    fn y(&self) -> f64 {
+    #[inline]
+    pub fn y(&self) -> f64 {
         self.1
     }
-    fn z(&self) -> f64 {
+    #[inline]
+    pub fn z(&self) -> f64 {
         self.2
+    }
+
+    // min-max-abs
+    #[inline]
+    pub fn max_val(&self) -> f64 {
+        self.0.max(self.1).max(self.2)
+    }
+
+    #[inline]
+    pub fn min_val(&self) -> f64 {
+        self.0.min(self.1).min(self.2)
+    }
+    
+    pub fn dominant_axis(&self) -> usize {
+        let (x, y, z) = (self.0.abs(), self.1.abs(), self.2.abs());
+        [x, y, z].iter().enumerate().max_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0
+    }
+
+    pub fn subinant_axis(&self) -> usize {
+        let (x, y, z) = (self.0.abs(), self.1.abs(), self.2.abs());
+        [x, y, z].iter().enumerate().min_by(|a, b| a.1.partial_cmp(b.1).unwrap()).unwrap().0
+    }
+
+    pub fn midinant_axis(&self) -> usize {
+        let d = self.dominant_axis();
+        let s = self.subinant_axis();
+        3 - d - s
     }
 
     //------------------------------------------------------------
     // accessors with calculation
-    #[inline]
-    pub fn det(&self, v1: &Vec3d, v2: &Vec3d) -> f64 {
-        return self.0 * (v1.1 * v2.2 - v2.1 * v1.2)
-            + self.1 * (v2.0 * v1.2 - v1.0 * v2.2)
-            + self.2 * (v1.0 * v2.1 - v2.0 * v1.1);
-    }
-
     #[inline]
     pub fn dot(&self, v: &Vec3d) -> f64 {
         self.0 * v.0 + self.1 * v.1 + self.2 * v.2
@@ -59,13 +82,50 @@ impl Vec3d {
     }
 
     #[inline]
+    pub fn det(&self, v1: &Vec3d, v2: &Vec3d) -> f64 {
+        return self.0 * (v1.1 * v2.2 - v2.1 * v1.2)
+            + self.1 * (v2.0 * v1.2 - v1.0 * v2.2)
+            + self.2 * (v1.0 * v2.1 - v2.0 * v1.1);
+    }
+
+    #[inline]
+    pub fn sum(&self) -> f64 {
+        self.0 + self.1 + self.2
+    }
+
+    #[inline]
+    pub fn abs(&self) -> Vec3d {
+        Vec3d(
+            self.0.max(-self.0),
+            self.1.max(-self.1),
+            self.2.max(-self.2),
+        )
+    }
+
+    #[inline]
+    pub fn max_vec(&self, v: &Self) -> Vec3d {
+        Vec3d(self.0.max(v.0), self.1.max(v.1), self.2.max(v.2))
+    }
+
+    #[inline]
+    pub fn min_vec(&self, v: &Self) -> Vec3d {
+        Vec3d(self.0.min(v.0), self.1.min(v.1), self.2.min(v.2))
+    }
+
+    #[inline]
+    pub fn r#box(&self, v1: &Self, v2: &Self) -> f64 {
+        Self::dot(&Self::cross(v1, v2), self)
+    }
+
+    // get the magnitude
+    #[inline]
     pub fn sqr_mag(&self) -> f64 {
-        Self::dot(self, self)
+        self.0 * self.0 + self.1 * self.1 + self.2 * self.2
     }
 
     #[inline]
     pub fn mag(&self) -> f64 {
-        self.sqr_mag().sqrt()
+        (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
     }
 
     #[inline]
@@ -73,18 +133,35 @@ impl Vec3d {
         ((axis as isize + direction) as usize % 3_usize) as usize
     }
 
+    // for the norm values of the vector.
+    pub fn l1_norm(&self) -> f64 {
+        self.0.max(-self.0) + self.1.max(-self.1) + self.2.max(-self.2)
+    }
+
+    #[inline]
+    pub fn l2_norm(&self) -> f64 {
+        (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
+    }
+
+    #[inline]
+    pub fn linf_norm(&self) -> f64 {
+        // self.abs().
+        self.abs().max_val()
+    }
+
     //------------------------------------------------------------
     // setters
-    fn max_set(&mut self, v: &Vec3d) -> &Self {
-        self.0 = if self.0 < v.0 { v.0 } else { self.0 };
-        self.1 = if self.1 < v.1 { v.1 } else { self.1 };
-        self.2 = if self.2 < v.2 { v.2 } else { self.2 };
+    pub fn max_set(&mut self, v: &Vec3d) -> &Self {
+        self.0 = self.0.max(v.0);
+        self.1 = self.1.max(v.1);
+        self.2 = self.2.max(v.2);
         self
     }
-    fn min_set(&mut self, v: &Vec3d) -> &Self {
-        self.0 = if self.0 > v.0 { v.0 } else { self.0 };
-        self.1 = if self.1 > v.1 { v.1 } else { self.1 };
-        self.2 = if self.2 > v.2 { v.2 } else { self.2 };
+
+    pub fn min_set(&mut self, v: &Vec3d) -> &Self {
+        self.0 = self.0.min(v.0);
+        self.1 = self.1.min(v.1);
+        self.2 = self.2.min(v.2);
         self
     }
     //------------------------------------------------------------
@@ -141,6 +218,13 @@ impl PartialEq for Vec3d {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0 && self.1 == other.1 && self.2 == other.2
+    }
+}
+
+impl PartialEq<f64> for Vec3d {
+    #[inline]
+    fn eq(&self, other: &f64) -> bool {
+        self.0 == *other && self.1 == *other && self.2 == *other
     }
 }
 
