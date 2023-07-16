@@ -1,25 +1,26 @@
 // triangle surface
 
+use std::rc::Rc;
+
 use crate::trace::basic::Fill;
 use crate::vectors::Vec3d;
 
 use super::basic::{HitRecord, Ray};
 
 pub struct Sphere {
-    pub material: Fill,
+    pub material: Rc<Fill>,
     pub center: Vec3d,
     pub radius: f64,
 }
 
 pub struct Triangle {
-    pub material: Fill,
+    pub material: Rc<Fill>,
     pub a: Vec3d,
     pub b: Vec3d,
     pub c: Vec3d,
 }
 
 pub struct TrianglePatch {
-    pub material: Fill,
     pub _super: Triangle,
     pub n1: Vec3d,
     pub n2: Vec3d,
