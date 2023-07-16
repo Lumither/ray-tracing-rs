@@ -11,6 +11,7 @@ pub struct Ray {
     pub depth: u8,
 }
 
+#[derive(Default)]
 pub struct Fill {
     pub c: Color,
     pub kd: f64,

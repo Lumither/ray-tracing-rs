@@ -11,10 +11,10 @@ use crate::idx::{IdxVec2d, IdxVec3d, Indexer};
 use super::ERROR;
 
 // #[derive(Debug, Clone)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Vec3d(pub f64, pub f64, pub f64);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Vec2d(pub f64, pub f64);
 
 impl Vec3d {
