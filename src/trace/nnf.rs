@@ -34,8 +34,8 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
     while let Some(Ok(line)) = lines.next() {
         match line.chars().next() {
             Some('b') => {
-                let mut ss = line.split_whitespace();
-                ss.next();
+                let mut ss = line.split_whitespace().skip(1);
+                // ss.next();
                 if let (Some(r), Some(g), Some(b)) = (ss.next(), ss.next(), ss.next()) {
                     background_color = Color {
                         0: r.parse().unwrap(),
