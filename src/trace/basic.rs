@@ -52,14 +52,8 @@ pub struct BGColor {
 }
 
 impl Fill {
+    #[inline]
     pub fn new() -> Fill {
-        Fill {
-            c: Color::new(),
-            kd: 0.0,
-            ks: 0.0,
-            shine: 0.0,
-            t: 0.0,
-            ior: 0.0,
-        }
+        Fill::default()
     }
 }
