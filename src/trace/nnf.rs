@@ -2,7 +2,7 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::rc::Rc;
 
-use crate::trace::basic::{Camara, Light};
+use crate::trace::basic::{Camera, Light};
 use crate::trace::{Color, Surface};
 use crate::vectors::{Vec2d, Vec3d};
 use crate::ERROR;
@@ -15,7 +15,7 @@ pub struct NnfReadError;
 
 pub struct NnfFile {
     pub background_color: Color,
-    pub camara: Camara,
+    pub camera: Camera,
     pub lights: Vec<Light>,
     pub surfaces: Vec<Box<dyn Surface>>,
 }
@@ -25,7 +25,7 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
     let reader = BufReader::new(file);
 
     let mut background_color: Color = Color::new();
-    let mut camara: Option<Camara> = None;
+    let mut camera: Option<Camera> = None;
     let mut lights: Vec<Light> = Vec::new();
     let mut surfaces: Vec<Box<dyn Surface>> = Vec::new();
     let mut fill = Rc::new(Fill::new());
@@ -34,8 +34,8 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
     while let Some(Ok(line)) = lines.next() {
         match line.chars().next() {
             Some('b') => {
-                let mut ss = line.split_whitespace().skip(1);
-                // ss.next();
+                let mut ss = line.split_whitespace();
+                ss.next();
                 if let (Some(r), Some(g), Some(b)) = (ss.next(), ss.next(), ss.next()) {
                     background_color = Color {
                         0: r.parse().unwrap(),
@@ -107,7 +107,7 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
                         }
                     }
                 }
-                camara = Some(Camara {
+                camera = Some(Camera {
                     from: tmp_from,
                     at: tmp_at,
                     up: tmp_up,
@@ -189,7 +189,7 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
 
     Ok(NnfFile {
         background_color,
-        camara: camara.expect("the nff file should include information of camera"),
+        camera: camera.expect("the nff file should include information of camera"),
         lights,
         surfaces,
     })

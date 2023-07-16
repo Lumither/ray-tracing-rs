@@ -6,7 +6,7 @@ use super::Color;
 
 pub struct Ray {
     pub cam_pos: Vec3d,
-    // camara position
+    // camera position
     pub dir: Vec3d,
     pub depth: u8,
 }
@@ -32,9 +32,9 @@ pub struct Light {
     pub color: Color,
 }
 
-pub struct Camara {
+pub struct Camera {
     pub from: Vec3d,
-    // camara position
+    // camera position
     pub at: Vec3d,
     // position to be at the center of img
     pub up: Vec3d,
@@ -42,8 +42,8 @@ pub struct Camara {
     pub angle: f64,
     // pov
     pub hither: f64,
-    // distance of the hither plane (if any) from the camara
-    pub resolution: Vec2d, // resolution of camara
+    // distance of the hither plane (if any) from the camera
+    pub resolution: Vec2d, // resolution of camera
 }
 
 pub struct BGColor {
