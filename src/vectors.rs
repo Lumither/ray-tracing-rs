@@ -413,15 +413,6 @@ impl DivAssign<f64> for Vec3d {
 ///
 impl Vec2d {}
 
-impl Add for Vec2d {
-    type Output = Vec2d;
-
-    #[inline]
-    fn add(self, rhs: Self) -> Self::Output {
-        Vec2d(self[0] + rhs[0], self[1] + rhs[1])
-    }
-}
-
 impl ops::Index<usize> for Vec2d {
     type Output = f64;
 
@@ -448,5 +439,36 @@ where
             IdxVec2d::Fst => &self.0,
             IdxVec2d::Snd => &self.1,
         }
+    }
+}
+
+impl Neg for Vec2d {
+    
+}
+
+impl Add for Vec2d {
+    type Output = Vec2d;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        Vec2d(self.0 + rhs.0, self.1 + rhs.1)
+    }
+}
+
+impl Add<f64> for Vec2d {
+    type Output = Vec2d;
+
+    #[inline]
+    fn add(self, rhs: f64) -> Self::Output {
+        Vec2d(self.0 + rhs, self.1 + rhs)
+    }
+}
+
+impl Add<Vec2d> for f64 {
+    type Output = Vec2d;
+
+    #[inline]
+    fn add(self, rhs: Vec2d) -> Self::Output {
+        Vec2d(self + rhs.0, self + rhs.1)
     }
 }
