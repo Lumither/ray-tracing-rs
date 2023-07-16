@@ -1,7 +1,7 @@
 //! idx.rs -- Indexer values
 //!
 //!
-//! 
+//!
 
 use super::ERROR;
 
@@ -46,7 +46,7 @@ impl From<usize> for IdxRGB {
             0 => Self::R,
             1 => Self::G,
             2 => Self::B,
-            x => panic!("{ERROR} can't convert the value into IdxRGB: {}", x)
+            x => panic!("{ERROR} can't convert the value into IdxRGB: {}", x),
         }
     }
 }
@@ -58,11 +58,10 @@ impl From<usize> for IdxUVW {
             0 => Self::U,
             1 => Self::V,
             2 => Self::W,
-            x => panic!("{ERROR} can't convert the value into IdxUVW: {}", x)
+            x => panic!("{ERROR} can't convert the value into IdxUVW: {}", x),
         }
     }
 }
-
 
 impl From<usize> for IdxXYZ {
     fn from(value: usize) -> Self {
@@ -71,12 +70,10 @@ impl From<usize> for IdxXYZ {
             0 => Self::X,
             1 => Self::Y,
             2 => Self::Z,
-            x => panic!("{ERROR} can't convert the value into IdxXYZ: {}", x)
+            x => panic!("{ERROR} can't convert the value into IdxXYZ: {}", x),
         }
     }
 }
-
-
 
 impl From<usize> for IdxUV {
     fn from(value: usize) -> Self {
@@ -84,11 +81,10 @@ impl From<usize> for IdxUV {
         match value {
             0 => Self::U,
             1 => Self::V,
-            x => panic!("{ERROR} can't convert the value into IdxUV: {}", x)
+            x => panic!("{ERROR} can't convert the value into IdxUV: {}", x),
         }
     }
 }
-
 
 impl From<usize> for IdxXY {
     fn from(value: usize) -> Self {
@@ -96,11 +92,10 @@ impl From<usize> for IdxXY {
         match value {
             0 => Self::X,
             1 => Self::Y,
-            x => panic!("{ERROR} can't convert the value into IdxXY: {}", x)
+            x => panic!("{ERROR} can't convert the value into IdxXY: {}", x),
         }
     }
 }
-
 
 pub trait Indexer {
     type Label;
