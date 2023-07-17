@@ -12,7 +12,11 @@ use super::basic::Fill;
 use super::surface::Sphere;
 
 #[derive(Debug)]
-pub struct NnfReadError;
+pub enum NnfCreateError {
+    ReadingError,
+    CreateError,
+    ValidityError
+}
 
 type MaterialSurf = (Box<dyn Surface>, Rc<Fill>);
 
@@ -23,10 +27,13 @@ pub struct NnfFile {
     pub surfaces: Vec<MaterialSurf>,
 }
 
-pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
-    let file = fs::File::open(fname).expect("file DNE");
-    let reader = BufReader::new(file);
+pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
+    let file = match fs::File::open(fname) {
+        Ok(file) => file,
+        Err(_) => return Err(NnfCreateError::ReadingError),
+    };
 
+    let reader = BufReader::new(file);
     let mut background_color: Color = Color::new();
     let mut camera: Option<Camera> = None;
     let mut lights: Vec<Light> = Vec::new();
