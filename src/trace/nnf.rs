@@ -2,10 +2,11 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::rc::Rc;
 
-use crate::trace::basic::{Camera, Light};
-use crate::trace::{Color, Surface};
-use crate::vectors::{Vec2d, Vec3d};
 use crate::ERROR;
+use crate::trace::{Color, Surface, Triangle};
+use crate::trace::basic::{Camera, Light};
+use crate::trace::surface::TrianglePatch;
+use crate::vectors::{Vec2d, Vec3d};
 
 use super::basic::Fill;
 use super::surface::Sphere;
@@ -58,9 +59,7 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
                         let mut ss = line.split_whitespace();
                         match ss.next() {
                             Some("from") => {
-                                if let (Some(x), Some(y), Some(z)) =
-                                    (ss.next(), ss.next(), ss.next())
-                                {
+                                if let (Some(x), Some(y), Some(z)) = (ss.next(), ss.next(), ss.next()) {
                                     tmp_from = Vec3d(
                                         x.parse().unwrap(),
                                         y.parse().unwrap(),
@@ -69,9 +68,7 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
                                 }
                             }
                             Some("at") => {
-                                if let (Some(x), Some(y), Some(z)) =
-                                    (ss.next(), ss.next(), ss.next())
-                                {
+                                if let (Some(x), Some(y), Some(z)) = (ss.next(), ss.next(), ss.next()) {
                                     tmp_at = Vec3d(
                                         x.parse().unwrap(),
                                         y.parse().unwrap(),
@@ -80,9 +77,7 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
                                 }
                             }
                             Some("up") => {
-                                if let (Some(x), Some(y), Some(z)) =
-                                    (ss.next(), ss.next(), ss.next())
-                                {
+                                if let (Some(x), Some(y), Some(z)) = (ss.next(), ss.next(), ss.next()) {
                                     tmp_up = Vec3d(
                                         x.parse().unwrap(),
                                         y.parse().unwrap(),
@@ -125,12 +120,133 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
                     Some("p") => false,
                     x => panic!("{} no such type of polygon header: {}", ERROR, x.unwrap()),
                 };
+                let mut vertices: Vec<Vec3d> = Vec::new();
+                let mut normals: Vec<Vec3d> = Vec::new();
+                let mut ss = line.split_whitespace().skip(1);
+                let num: u128 = ss.next().unwrap().parse().unwrap();
+                for _ in 0..num {
+                    if let Some(Ok(_line)) = lines.next() {
+                        let mut tmp_vertice = Vec3d(0.0, 0.0, 0.0);
+                        let mut tmp_normal = Vec3d(0.0, 0.0, 0.0);
+                        let mut iter_line = _line.split_whitespace();
+                        if patch {
+                            if let (Some(v1), Some(v2), Some(v3), Some(n1), Some(n2), Some(n3)) = (
+                                iter_line.next(),
+                                iter_line.next(),
+                                iter_line.next(),
+                                iter_line.next(),
+                                iter_line.next(),
+                                iter_line.next(),
+                            ) {
+                                tmp_vertice = Vec3d(
+                                    v1.parse().unwrap(),
+                                    v2.parse().unwrap(),
+                                    v3.parse().unwrap(),
+                                );
+                                tmp_normal = Vec3d(
+                                    n1.parse().unwrap(),
+                                    n2.parse().unwrap(),
+                                    n3.parse().unwrap(),
+                                );
+                            }
+                        } else if let (Some(v1), Some(v2), Some(v3)) = (iter_line.next(), iter_line.next(), iter_line.next()) {
+                            tmp_vertice = Vec3d(
+                                v1.parse().unwrap(),
+                                v2.parse().unwrap(),
+                                v3.parse().unwrap(),
+                            );
+                        }
+                        vertices.push(tmp_vertice);
+                        normals.push(tmp_normal);
+                    }
+                }
+                let mut make_triangles = false;
+                if vertices.len() == 3 {
+                    if patch {
+                        surfaces.push((
+                            Box::new(TrianglePatch {
+                                _super: Triangle {
+                                    a: vertices[0],
+                                    b: vertices[1],
+                                    c: vertices[2],
+                                },
+                                n1: normals[0],
+                                n2: normals[1],
+                                n3: normals[2],
+                            }),
+                            Rc::clone(&fill),
+                        ));
+                    } else {
+                        surfaces.push((
+                            Box::new(Triangle {
+                                a: vertices[0],
+                                b: vertices[1],
+                                c: vertices[2],
+                            }),
+                            Rc::clone(&fill),
+                        ));
+                    }
+                } else if vertices.len() == 4 {
+                    let n0: Vec3d = (vertices[1] - vertices[0]).cross(&(vertices[2] - vertices[0]));
+                    let n1: Vec3d = (vertices[2] - vertices[1]).cross(&(vertices[3] - vertices[1]));
+                    let n2: Vec3d = (vertices[3] - vertices[2]).cross(&(vertices[0] - vertices[2]));
+                    let n3: Vec3d = (vertices[0] - vertices[3]).cross(&(vertices[1] - vertices[3]));
+                    if n0.dot(&n1) > 0.0 && n0.dot(&n2) > 0.0 && n0.dot(&n3) > 0.0 {
+                        make_triangles = true;
+                        if patch {
+                            surfaces.push((
+                                Box::new(TrianglePatch {
+                                    _super: Triangle {
+                                        a: vertices[0],
+                                        b: vertices[1],
+                                        c: vertices[2],
+                                    },
+                                    n1: normals[0],
+                                    n2: normals[1],
+                                    n3: normals[2],
+                                }),
+                                Rc::clone(&fill),
+                            ));
+                            surfaces.push((
+                                Box::new(TrianglePatch {
+                                    _super: Triangle {
+                                        a: vertices[0],
+                                        b: vertices[2],
+                                        c: vertices[3],
+                                    },
+                                    n1: normals[0],
+                                    n2: normals[2],
+                                    n3: normals[3],
+                                }),
+                                Rc::clone(&fill),
+                            ));
+                        } else {
+                            surfaces.push((
+                                Box::new(Triangle {
+                                    a: vertices[0],
+                                    b: vertices[1],
+                                    c: vertices[2],
+                                }),
+                                Rc::clone(&fill),
+                            ));
+                            surfaces.push((
+                                Box::new(Triangle {
+                                    a: vertices[0],
+                                    b: vertices[2],
+                                    c: vertices[3],
+                                }),
+                                Rc::clone(&fill),
+                            ));
+                        }
+                    }
+                    if !make_triangles {
+                        eprintln!("I didn't make triangles.  Poly not flat or more than quad.");
+                    }
+                }
             }
             Some('s') => {
                 let mut ss = line.split_whitespace().skip(1);
-                if let (Some(x), Some(y), Some(z), Some(r)) =
-                    (ss.next(), ss.next(), ss.next(), ss.next())
-                {
+                if let (Some(x), Some(y), Some(z), Some(r)) = (ss.next(), ss.next(), ss.next(), ss.next()) {
                     surfaces.push((
                         Box::new(Sphere {
                             center: Vec3d(
