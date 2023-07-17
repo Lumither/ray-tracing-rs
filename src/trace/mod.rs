@@ -92,10 +92,10 @@ impl Config {
 impl Tracer {
     #[inline]
     pub fn new(config: Config) -> Tracer {
-        Self::from_file(config)
+        Self::from_config(config)
     }
 
-    fn from_file(config: Config) -> Tracer {
+    fn from_config(config: Config) -> Tracer {
         todo!("method not implemented")
     }
 }

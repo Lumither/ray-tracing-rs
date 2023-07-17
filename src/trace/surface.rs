@@ -8,13 +8,13 @@ use crate::vectors::Vec3d;
 use super::basic::{HitRecord, Ray};
 
 pub struct Sphere {
-    pub material: Rc<Fill>,
+    // pub material: Rc<Fill>,
     pub center: Vec3d,
     pub radius: f64,
 }
 
 pub struct Triangle {
-    pub material: Rc<Fill>,
+    // pub material: Rc<Fill>,
     pub a: Vec3d,
     pub b: Vec3d,
     pub c: Vec3d,

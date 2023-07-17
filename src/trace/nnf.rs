@@ -13,11 +13,13 @@ use super::surface::Sphere;
 #[derive(Debug)]
 pub struct NnfReadError;
 
+type MaterialSurf = (Box<dyn Surface>, Rc<Fill>);
+
 pub struct NnfFile {
     pub background_color: Color,
     pub camera: Camera,
     pub lights: Vec<Light>,
-    pub surfaces: Vec<Box<dyn Surface>>,
+    pub surfaces: Vec<MaterialSurf>,
 }
 
 pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
@@ -27,7 +29,7 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
     let mut background_color: Color = Color::new();
     let mut camera: Option<Camera> = None;
     let mut lights: Vec<Light> = Vec::new();
-    let mut surfaces: Vec<Box<dyn Surface>> = Vec::new();
+    let mut surfaces: Vec<MaterialSurf> = Vec::new();
     let mut fill = Rc::new(Fill::new());
 
     let mut lines = reader.lines();
@@ -129,11 +131,17 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
                 if let (Some(x), Some(y), Some(z), Some(r)) =
                     (ss.next(), ss.next(), ss.next(), ss.next())
                 {
-                    surfaces.push(Box::new(Sphere {
-                        center: Vec3d(x.parse().unwrap(), y.parse().unwrap(), z.parse().unwrap()),
-                        material: Rc::clone(&fill),
-                        radius: r.parse().unwrap(),
-                    }));
+                    surfaces.push((
+                        Box::new(Sphere {
+                            center: Vec3d(
+                                x.parse().unwrap(),
+                                y.parse().unwrap(),
+                                z.parse().unwrap(),
+                            ),
+                            radius: r.parse().unwrap(),
+                        }),
+                        Rc::clone(&fill),
+                    ));
                 }
             }
             Some('f') => {
