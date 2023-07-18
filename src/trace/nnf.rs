@@ -2,11 +2,11 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::rc::Rc;
 
-use crate::ERROR;
-use crate::trace::{Color, Surface, Triangle};
 use crate::trace::basic::{Camera, Light};
 use crate::trace::surface::TrianglePatch;
+use crate::trace::{Color, Surface, Triangle};
 use crate::vectors::{Vec2d, Vec3d};
+use crate::ERROR;
 
 use super::basic::Fill;
 use super::surface::Sphere;
@@ -15,7 +15,7 @@ use super::surface::Sphere;
 pub enum NnfCreateError {
     ReadingError,
     CreateError,
-    ValidityError
+    ValidityError,
 }
 
 type MaterialSurf = (Box<dyn Surface>, Rc<Fill>);
@@ -66,7 +66,9 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
                         let mut ss = line.split_whitespace();
                         match ss.next() {
                             Some("from") => {
-                                if let (Some(x), Some(y), Some(z)) = (ss.next(), ss.next(), ss.next()) {
+                                if let (Some(x), Some(y), Some(z)) =
+                                    (ss.next(), ss.next(), ss.next())
+                                {
                                     tmp_from = Vec3d(
                                         x.parse().unwrap(),
                                         y.parse().unwrap(),
@@ -75,7 +77,9 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
                                 }
                             }
                             Some("at") => {
-                                if let (Some(x), Some(y), Some(z)) = (ss.next(), ss.next(), ss.next()) {
+                                if let (Some(x), Some(y), Some(z)) =
+                                    (ss.next(), ss.next(), ss.next())
+                                {
                                     tmp_at = Vec3d(
                                         x.parse().unwrap(),
                                         y.parse().unwrap(),
@@ -84,7 +88,9 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
                                 }
                             }
                             Some("up") => {
-                                if let (Some(x), Some(y), Some(z)) = (ss.next(), ss.next(), ss.next()) {
+                                if let (Some(x), Some(y), Some(z)) =
+                                    (ss.next(), ss.next(), ss.next())
+                                {
                                     tmp_up = Vec3d(
                                         x.parse().unwrap(),
                                         y.parse().unwrap(),
@@ -156,7 +162,9 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
                                     n3.parse().unwrap(),
                                 );
                             }
-                        } else if let (Some(v1), Some(v2), Some(v3)) = (iter_line.next(), iter_line.next(), iter_line.next()) {
+                        } else if let (Some(v1), Some(v2), Some(v3)) =
+                            (iter_line.next(), iter_line.next(), iter_line.next())
+                        {
                             tmp_vertice = Vec3d(
                                 v1.parse().unwrap(),
                                 v2.parse().unwrap(),
@@ -253,7 +261,9 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
             }
             Some('s') => {
                 let mut ss = line.split_whitespace().skip(1);
-                if let (Some(x), Some(y), Some(z), Some(r)) = (ss.next(), ss.next(), ss.next(), ss.next()) {
+                if let (Some(x), Some(y), Some(z), Some(r)) =
+                    (ss.next(), ss.next(), ss.next(), ss.next())
+                {
                     surfaces.push((
                         Box::new(Sphere {
                             center: Vec3d(
