@@ -123,8 +123,9 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfReadError> {
                 let patch = match ss.next() {
                     Some("pp") => true,
                     Some("p") => false,
-                    x => panic!("{} no such type of polygon header: {}", ERROR, x.unwrap()),
+                    x => panic!("{ERROR} no such type of polygon header: {}", x.unwrap()),
                 };
+                if patch {} else {}
             }
             Some('s') => {
                 let mut ss = line.split_whitespace().skip(1);
