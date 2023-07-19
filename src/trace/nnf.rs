@@ -133,9 +133,6 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
                     Some("p") => false,
                     x => panic!("{ERROR} no such type of polygon header: {}", x.unwrap()),
                 };
-<<<<<<< HEAD
-                if patch {} else {}
-=======
                 let mut vertices: Vec<Vec3d> = Vec::new();
                 let mut normals: Vec<Vec3d> = Vec::new();
                 let mut ss = line.split_whitespace().skip(1);
@@ -261,7 +258,6 @@ pub fn read_nnf(fname: &str) -> Result<NnfFile, NnfCreateError> {
                         eprintln!("I didn't make triangles.  Poly not flat or more than quad.");
                     }
                 }
->>>>>>> refs/remotes/origin/dev
             }
             Some('s') => {
                 let mut ss = line.split_whitespace().skip(1);
