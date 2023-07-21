@@ -4,7 +4,7 @@ use std::{cell::RefCell, rc::Rc};
 
 pub use surface::{Surface, Triangle};
 
-use crate::vectors::Vec3d;
+use crate::{trace::nnf::read_nnf, vectors::Vec3d};
 
 use self::basic::{Fill, Light};
 
@@ -35,6 +35,7 @@ pub struct Tracer {
     pub surfaces: Vec<(Box<dyn Surface>, Fill)>,
     /// light sources
     pub lights: Vec<Light>,
+    pub to_file: Box<str>,
 }
 
 impl Config {
@@ -96,6 +97,7 @@ impl Tracer {
     }
 
     fn from_config(config: Config) -> Tracer {
+        let nnf_file = read_nnf(&config.fname[0][..]);
         todo!("method not implemented")
     }
 }
