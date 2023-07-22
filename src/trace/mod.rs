@@ -5,6 +5,7 @@ use std::{cell::RefCell, rc::Rc};
 pub use surface::{Surface, Triangle};
 
 use crate::{trace::nnf::read_nnf, vectors::Vec3d};
+use crate::trace::nnf::NnfFile;
 
 use self::basic::{Fill, Light};
 
@@ -15,6 +16,7 @@ mod surface;
 pub type SurfPtr = Rc<RefCell<dyn Surface>>;
 
 type Color = Vec3d;
+type MaterialSurf = (Box<dyn Surface>, Rc<Fill>);
 
 #[derive(Debug)]
 pub struct Config {
@@ -32,10 +34,10 @@ pub struct Tracer {
     /// position of your eye
     pub eye: Vec3d,
     /// surfaces that we encounter
-    pub surfaces: Vec<(Box<dyn Surface>, Fill)>,
+    pub surfaces: Vec<MaterialSurf>,
     /// light sources
     pub lights: Vec<Light>,
-    pub to_file: Box<str>,
+    pub to_file: String,
 }
 
 impl Config {
@@ -97,7 +99,14 @@ impl Tracer {
     }
 
     fn from_config(config: Config) -> Tracer {
-        let nnf_file = read_nnf(&config.fname[0][..]);
-        todo!("method not implemented")
+        let nnf_file = read_nnf(&config.fname[0][..]).unwrap();
+        Tracer{
+            bcolor: nnf_file.background_color,
+            eye: nnf_file.camera.from,
+            surfaces: nnf_file.surfaces,
+            lights: nnf_file.lights,
+            to_file: config.fname[1].clone(),
+        }
+        // todo!("method not implemented")
     }
 }
